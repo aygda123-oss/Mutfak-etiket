@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#c8102e">
+  <meta name="description" content="Domino's mutfak ürünleri için raf ömrü hesaplama ve termal etiket hazırlama uygulaması.">
+  <title>Mutfak Etiket Merkezi · NIIMBOT B2 · 50×30</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <style>
+    :root{--red:#c8102e;--red-dark:#a70d25;--navy:#14243a;--ink:#172335;--muted:#64748b;--line:#e4e9f0;--bg:#f3f5f8;--white:#fff;--green:#17865b;--amber:#b7791f;--shadow:0 12px 34px rgba(20,36,58,.08)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+    button,input,select{font:inherit}button{cursor:pointer}.app-shell{max-width:1320px;margin:0 auto;padding:22px 24px 60px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--navy);color:#fff;padding:20px 24px;border-radius:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .topbar:after{content:"";position:absolute;width:250px;height:250px;border:34px solid rgba(255,255,255,.05);border-radius:50%;right:90px;top:-175px;pointer-events:none}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}.brand-mark{width:48px;height:48px;border-radius:14px;background:var(--red);display:grid;place-items:center;font-weight:900;letter-spacing:-2px;font-size:21px;flex:none;box-shadow:0 7px 18px rgba(200,16,46,.3)}
+    .brand small{display:block;color:#c6d1df;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:3px}.brand h1{font-size:21px;line-height:1.15;margin:0;font-weight:850;letter-spacing:-.5px}.brand p{margin:5px 0 0;color:#c6d1df;font-size:12px}
+    .top-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;position:relative;z-index:1}.top-btn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 13px;border-radius:11px;font-weight:700;font-size:12px}.top-btn:hover{background:rgba(255,255,255,.16)}
+    .headline{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:24px 2px 16px}.headline h2{margin:0;font-size:22px;letter-spacing:-.5px}.headline p{margin:5px 0 0;color:var(--muted);font-size:13px}.today-pill{padding:9px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--navy);white-space:nowrap}
+    .notice{display:flex;align-items:flex-start;gap:10px;background:#fff8e9;border:1px solid #f1d9a9;color:#765014;padding:12px 14px;border-radius:13px;font-size:12px;line-height:1.5;margin-bottom:17px}.notice b{color:#593a0a}.notice .info-icon{width:20px;height:20px;border-radius:50%;background:#f4d89c;display:grid;place-items:center;font-weight:900;flex:none}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.9fr);gap:18px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{display:flex;align-items:center;gap:10px}.step{width:28px;height:28px;display:grid;place-items:center;background:#fff0f2;border-radius:9px;color:var(--red);font-weight:900;font-size:13px}.panel-head h3{font-size:15px;margin:0;font-weight:850}.panel-head p{margin:3px 0 0;font-size:11px;color:var(--muted)}.panel-body{padding:18px 19px}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{min-width:0}.field.full{grid-column:1/-1}.field label{display:block;margin:0 0 6px;font-size:11px;font-weight:800;color:#46566b}.field input,.field select{width:100%;height:43px;border:1px solid #d9e0e9;border-radius:10px;padding:0 11px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.09)}.field .hint{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.4}
+    .mode-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#f1f4f8;padding:5px;border-radius:12px;margin-bottom:15px}.mode-tab{background:transparent;border:0;padding:9px 5px;border-radius:9px;font-size:10px;line-height:1.25;font-weight:800;color:#617086}.mode-tab.active{background:#fff;color:var(--red);box-shadow:0 2px 7px rgba(20,36,58,.1)}
+    .search-wrap{position:relative;margin:17px 0 12px}.search-wrap input{width:100%;height:44px;border:1px solid #d9e0e9;border-radius:11px;padding:0 14px 0 40px;outline:none}.search-wrap:before{content:"⌕";position:absolute;left:14px;top:7px;font-size:24px;color:#8290a3}.category-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:2px 0 12px}.cat-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:58px;text-align:left;border:1px solid var(--line);background:#fff;padding:12px;border-radius:12px;font-size:12px;font-weight:850;color:#26364b;box-shadow:0 2px 6px rgba(20,36,58,.035)}.cat-chip:after{content:"›";font-size:21px;color:#9aa6b5;font-weight:500}.cat-chip.active{background:#fff5f6;border:1.5px solid var(--red);color:var(--red)}.cat-chip.active:after{content:"✓";font-size:14px;color:var(--red)}.category-title{font-size:11px;font-weight:900;color:#64748b;letter-spacing:.5px;margin:5px 0 9px;text-transform:uppercase}.products-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 9px}.products-title b{font-size:12px}.back-category{border:0;background:#f1f4f8;color:#34445a;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:850}
+    .product-list{display:block;max-height:none;overflow:visible;padding:2px 3px 4px 0}.product-card{border:1px solid var(--line);background:#fff;text-align:left;padding:11px;border-radius:12px;min-width:0;transition:.15s}
+    .product-card-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:stretch;min-width:0}
+    .product-card-row .product-card{width:100%;min-width:0}
+    .queue-qty{display:flex;align-items:center;gap:5px;white-space:nowrap}.queue-qty button{width:27px;height:27px;border:1px solid #c8102e;border-radius:7px;background:#fff;color:#a70d25;font-size:18px;font-weight:900;line-height:1}.queue-qty strong{min-width:18px;text-align:center;font-size:13px}.queue-item{display:flex;align-items:center;gap:8px}.queue-item>div:first-child{flex:1;min-width:0}.queue-qty button:active{background:#c8102e;color:#fff}
+    .product-add-btn{border:1px solid #c8102e;background:#fff5f6;color:#a70d25;border-radius:10px;padding:7px 9px;font-size:10px;font-weight:900;white-space:nowrap;align-self:stretch}
+    .product-add-btn:active{background:#c8102e;color:#fff}
+.product-card:hover{border-color:#e3a2ae;transform:translateY(-1px)}.product-card.selected{border:1.5px solid var(--red);background:#fff8f9;box-shadow:0 0 0 2px rgba(200,16,46,.07)}.product-name{display:block;font-size:12px;font-weight:850;line-height:1.35;color:#1c2b40;min-height:32px}.product-meta{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-top:8px}.duration-chip{display:inline-flex;align-items:center;gap:4px;background:#eef3f8;color:#34475f;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:900}.duration-chip.skt{background:#fff3dc;color:#8b5a0a}.duration-chip.none{background:#f2f2f2;color:#888}.product-meta small{color:#8793a3;font-size:9px;font-weight:700}.empty{padding:22px;text-align:center;color:#7b8796;font-size:12px;grid-column:1/-1}
+    .selected-banner{margin-top:14px;padding:11px 12px;background:#f7f9fc;border:1px solid var(--line);border-radius:11px;display:flex;justify-content:space-between;gap:10px;align-items:center}.selected-banner b{font-size:12px}.selected-banner span{font-size:10px;color:var(--muted)}
+    .preview-wrap{padding:18px 19px}.preview-label{width:100%;aspect-ratio:2/1;border:1.5px solid #202a36;border-radius:7px;background:#fff;color:#111;padding:12px 14px;position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}.preview-label:before{content:"";position:absolute;left:0;top:0;bottom:0;width:11px;background:var(--day-color,var(--red))}.label-top{display:flex;justify-content:space-between;align-items:center;padding-left:4px;gap:10px}.label-brand{font-size:9px;font-weight:900;letter-spacing:1px;color:#313e50}.label-tag{font-size:9px;font-weight:950;border:2px solid var(--day-color,#222);background:var(--day-color,#222);color:#fff;padding:4px 7px;border-radius:4px;text-shadow:0 1px 1px #0005;white-space:nowrap}.label-product{font-size:clamp(17px,2vw,25px);font-weight:950;letter-spacing:-.6px;line-height:1.05;margin:4px 0 3px 4px;text-transform:uppercase;overflow-wrap:anywhere}.label-bottom{display:grid;grid-template-columns:1fr 1.12fr;gap:8px;margin-left:4px}.label-date-block{border-top:1px solid #333;padding-top:6px}.label-date-block small{display:block;font-size:8px;font-weight:900;letter-spacing:.5px;color:#555;margin-bottom:4px}.label-date-block strong{display:block;font-size:12px;font-weight:950;line-height:1.2}.label-date-block.exp strong{font-size:14px}.label-foot{display:flex;justify-content:space-between;align-items:center;padding-left:4px;font-size:8px;font-weight:800;color:#555;margin-top:5px}.preview-meta{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.mini-stat{border:1px solid var(--line);background:#f8fafc;border-radius:9px;padding:8px 10px;flex:1;min-width:90px}.mini-stat small{display:block;color:var(--muted);font-size:9px;font-weight:800}.mini-stat b{display:block;margin-top:3px;font-size:12px;color:var(--navy)}
+    .skt-box{display:none;background:#fff9ed;border:1px solid #f1d9a9;padding:11px;border-radius:10px;margin-top:12px}.skt-box.show{display:block}.skt-box label{font-size:11px;font-weight:850;color:#765014;display:block;margin-bottom:6px}.skt-box input{width:100%;height:40px;border:1px solid #e6c987;border-radius:8px;padding:0 10px}.warning-line{color:#946014;font-size:10px;line-height:1.4;margin-top:6px}
+    .primary-btn{width:100%;border:0;background:var(--red);color:#fff;border-radius:11px;padding:13px 16px;font-size:13px;font-weight:900;box-shadow:0 6px 15px rgba(200,16,46,.2);margin-top:14px}.primary-btn:hover{background:var(--red-dark)}.primary-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}.secondary-btn{border:1px solid #d8e0e9;background:#fff;color:#34445a;border-radius:9px;padding:9px 11px;font-size:11px;font-weight:850}.secondary-btn:hover{background:#f8fafc}.danger-btn{border:1px solid #f2c5cc;background:#fff7f8;color:#b4233c;border-radius:9px;padding:9px 11px;font-size:11px;font-weight:850}
+    .queue-panel{margin-top:18px}.queue-head{padding:16px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.queue-head h3{margin:0;font-size:15px}.queue-head p{margin:3px 0 0;font-size:11px;color:var(--muted)}.queue-count{background:#fff0f2;color:var(--red);font-weight:900;font-size:11px;padding:6px 9px;border-radius:999px}.queue-list{padding:0 19px}.queue-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #edf0f4}.queue-item:last-child{border-bottom:0}.queue-item b{display:block;font-size:12px}.queue-item small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.qty-control{display:flex;align-items:center;gap:5px;background:#f4f6f9;border-radius:9px;padding:3px}.qty-control button{width:25px;height:25px;border:0;background:#fff;border-radius:6px;color:#34445a;font-weight:900}.qty-control span{min-width:15px;text-align:center;font-size:11px;font-weight:900}.queue-actions{padding:14px 19px 18px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.queue-actions .right{display:flex;gap:8px;align-items:center}.print-layout{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);font-weight:800}.print-layout select{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 8px;color:var(--ink);background:#fff;font-size:10px}
+    .empty-queue{padding:25px 18px;text-align:center;color:#8390a1;font-size:12px}.empty-queue strong{display:block;color:#4a5b70;font-size:13px;margin-bottom:5px}
+    .footnote{margin:16px 4px 0;font-size:10px;color:#8994a3;line-height:1.5}.mobile-bottom{display:none}
+    .modal-backdrop{display:none;position:fixed;inset:0;z-index:50;background:rgba(9,18,30,.55);padding:20px;align-items:center;justify-content:center}.modal-backdrop.open{display:flex}.modal{width:min(620px,100%);max-height:85vh;overflow:auto;background:#fff;border-radius:17px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.24)}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.modal h3{margin:0;font-size:17px}.modal-close{border:0;background:#f1f3f6;border-radius:9px;width:32px;height:32px;font-weight:900}.modal p,.modal li{font-size:12px;line-height:1.6;color:#566579}.modal ul{padding-left:18px}.branch-setting{margin-top:15px}.branch-setting label{font-size:11px;font-weight:850;display:block;margin-bottom:6px}.branch-setting input{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;padding:0 10px}
+    .toast{position:fixed;z-index:90;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#15253b;color:#fff;padding:11px 15px;border-radius:10px;font-size:12px;font-weight:750;pointer-events:none;transition:.2s;box-shadow:0 8px 24px rgba(0,0,0,.18)}.toast.show{opacity:1;transform:translate(-50%,0)}
+    #printArea{display:none}
+    @media(max-width:900px){.workspace{grid-template-columns:1fr}.product-list{display:block;max-height:none;overflow:visible}.preview-label{max-width:650px;margin:0 auto}.topbar{padding:17px 18px}.app-shell{padding:14px 14px 40px}}
+    @media(max-width:560px){.product-group-items{grid-template-columns:repeat(2,minmax(0,1fr))}.app-shell{padding:10px 10px 30px}.topbar{border-radius:15px;padding:15px}.brand-mark{width:41px;height:41px;border-radius:12px;font-size:18px}.brand h1{font-size:17px}.brand p{font-size:10px}.brand small{font-size:9px}.top-actions{gap:5px}.top-btn{font-size:10px;padding:8px}.headline{margin:18px 2px 12px;align-items:flex-start;flex-direction:column}.headline h2{font-size:19px}.today-pill{font-size:10px}.notice{font-size:11px;padding:10px}.panel{border-radius:14px}.panel-head,.panel-body,.preview-wrap{padding:14px}.field-grid{gap:9px}.field label{font-size:10px}.field input,.field select{height:41px;font-size:12px}.mode-tabs{grid-template-columns:repeat(2,1fr)}.mode-tab{font-size:10px}.product-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:300px}.product-card{padding:9px}.product-add-btn{font-size:9px;padding:6px 7px}.product-name{font-size:11px}.preview-label{padding:9px 10px}.label-product{font-size:18px}.label-date-block strong{font-size:10px}.label-date-block.exp strong{font-size:12px}.label-brand{font-size:8px}.label-tag{font-size:7px}.label-date-block small{font-size:7px}.label-foot{font-size:7px}.queue-head,.queue-list,.queue-actions{padding-left:14px;padding-right:14px}.queue-item{grid-template-columns:minmax(0,1fr) auto auto;gap:6px}.queue-item b{font-size:11px}.queue-item small{font-size:9px}.queue-actions{align-items:flex-start}.queue-actions .right{width:100%;justify-content:space-between}.primary-btn{padding:12px}.mobile-bottom{display:block;position:fixed;z-index:10;bottom:0;left:0;right:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line)}.mobile-bottom button{margin:0}.footnote{padding-bottom:60px}}
+    
+  .product-group{margin:14px 0 20px}.product-group .products-title{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-bottom:2px solid var(--line);margin-bottom:8px;color:var(--navy)}.product-group .products-title small{color:var(--muted);font-size:11px}.product-group-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.product-group{display:block;min-height:1px}.product-group .products-title{display:flex}.product-card{display:block;min-height:58px}.product-card{width:100%;text-align:left;min-height:54px}
+
+    .topbar{border-radius:0 0 18px 18px;box-shadow:0 8px 28px rgba(20,36,58,.07)}
+    .brand{gap:13px}
+    .brand-mark{width:48px;height:48px;border-radius:13px;background:#fff;border:1px solid #e8edf3;display:flex;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 12px rgba(20,36,58,.08);overflow:hidden}
+    .domino-red,.domino-blue{width:15px;height:27px;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;transform:rotate(28deg)}
+    .domino-red{background:#c8102e}.domino-blue{background:#006491}
+    .domino-red i,.domino-blue i{display:block;width:4px;height:4px;border-radius:50%;background:#fff}
+    .brand h1{letter-spacing:-.4px}
+    .panel,.queue-panel{border-radius:16px;box-shadow:0 8px 28px rgba(20,36,58,.055)}
+    .primary-btn{border-radius:10px;box-shadow:0 5px 12px rgba(200,16,46,.15)}
+    @media(max-width:700px){.topbar{padding:14px 14px 16px}.brand-mark{width:42px;height:42px}.headline{margin-top:18px}}
+
+    /* Güncel etiket üstte; sade tek kolon çalışma alanı */
+    .workspace{display:flex;flex-direction:column;gap:14px}
+    #previewPanel{order:0;width:100%}#productPanel{order:1;width:100%}
+    .preview-wrap{padding:14px 16px}
+    .preview-label{max-width:760px;aspect-ratio:2/1;margin:0 auto;border:2px solid #111;border-radius:3px;padding:12px 16px}
+    .preview-label:before{width:13px}
+    .label-brand{font-size:10px;font-weight:950;color:#111}
+    .label-tag{font-size:11px;font-weight:950;padding:5px 9px;border:2px solid var(--day-color,#111);background:var(--day-color,#111);color:var(--day-ink,#fff);text-shadow:none}
+    .label-product{font-size:clamp(20px,2.5vw,30px);font-weight:950;color:#050505}
+    .label-date-block small{font-size:9px;color:#111}
+    .label-date-block strong{font-size:15px;font-weight:950;color:#000}
+    .label-date-block.exp strong{font-size:17px}
+    .label-foot{font-size:9px;color:#111;font-weight:900}
+    .product-group .products-title{border-bottom:3px solid #c8102e;background:#f8fafc;border-radius:7px 7px 0 0;padding:11px 9px}
+    .product-group .products-title b{font-size:13px;color:#14243a}
+    .product-card{border:1.5px solid #cbd5e1;background:#fff}
+    .product-card.selected{border:2px solid #c8102e;background:#fff0f2}
+    .duration-chip{background:#dbeafe;color:#12395e;border:1px solid #9cc6f2}
+    .duration-chip.skt{background:#ffe9b3;color:#6b3d00;border:1px solid #e6b54b}
+    .duration-chip.none{background:#eee;color:#333;border:1px solid #bbb}
+    .print-layout{font-weight:900;color:#14243a;font-size:11px}
+    @media(max-width:560px){.product-list{display:block;max-height:none;overflow:visible}.product-group-items{grid-template-columns:1fr}.preview-label{padding:9px 10px}.label-product{font-size:18px}.label-date-block strong{font-size:11px}.label-date-block.exp strong{font-size:13px}.label-tag{font-size:8px}}
+    
+
+
+    #productList{display:block!important;visibility:visible!important;min-height:80px;height:auto!important;max-height:none!important;overflow:visible!important;opacity:1!important}
+    .product-group{display:block!important;visibility:visible!important;margin:14px 0 22px}
+    .product-group-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .product-card{display:block!important;visibility:visible!important;width:100%;min-height:62px}
+    .p-top{justify-content:flex-end!important}
+
+
+    #productList{display:block!important;visibility:visible!important;min-height:80px;height:auto!important;max-height:none!important;overflow:visible!important;opacity:1!important}
+    .product-group{display:block!important;visibility:visible!important;margin:14px 0 22px}
+    .product-group-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .product-card{display:flex!important;visibility:visible!important;width:100%;min-height:62px}
+    .empty-products{padding:12px;color:#64748b}
+    @media(max-width:560px){.product-group-items{grid-template-columns:1fr}}
+
+
+#productList{display:block!important;visibility:visible!important;min-height:80px}
+.product-group{display:block!important;visibility:visible!important;margin:14px 0 22px}
+.product-group-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.product-card{display:block!important;visibility:visible!important;width:100%;min-height:62px}
+@media(max-width:560px){.product-group-items{grid-template-columns:1fr}}
+
+
+    /* Son düzenleme: yalnızca üst marka/ayarlar alanını kaldır; etiket ön izlemesini koru. */
+    .topbar{display:none!important}
+    .headline{display:none!important}
+    .workspace{display:flex!important;flex-direction:column!important;gap:14px!important}
+    #previewPanel{display:block!important;visibility:visible!important;order:0!important;width:100%!important}
+    #productPanel{display:block!important;visibility:visible!important;order:1!important;width:100%!important}
+    #productList{display:flex!important;flex-direction:column!important;gap:10px!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important}
+    .product-group{display:block!important;visibility:visible!important;margin:0!important;padding:0!important;border:1.5px solid #d8e0ea!important;border-radius:14px!important;background:#fff!important;overflow:hidden!important}
+    .product-group .group-toggle{width:100%!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:15px!important;margin:0!important;border:0!important;border-radius:0!important;background:#f7f9fc!important;text-align:left!important;cursor:pointer!important;min-height:76px!important}
+    .product-group.is-open .group-toggle{background:#fff1f3!important;border-bottom:1px solid #e7dce0!important}
+    .group-heading{display:flex!important;flex-direction:column!important;gap:5px!important;min-width:0!important}
+    .group-heading b{font-size:15px!important;font-weight:900!important;color:#17263b!important}
+    .group-heading small{font-size:11px!important;line-height:1.35!important;color:#68778c!important;font-weight:650!important}
+    .group-count{display:flex!important;align-items:center!important;gap:8px!important;white-space:nowrap!important;font-size:10px!important;font-weight:900!important;color:#c8102e!important}
+    .group-chevron{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;border-radius:50%!important;background:#c8102e!important;color:white!important;font-size:19px!important}
+    .product-group-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:12px!important}
+    @media(max-width:560px){
+      .product-group .group-toggle{min-height:72px!important;padding:13px!important}
+      .group-heading b{font-size:14px!important}
+      .group-heading small{font-size:10px!important}
+      .group-count{font-size:9px!important;gap:5px!important}
+      .group-chevron{width:30px!important;height:30px!important;font-size:20px!important}
+      .product-group-items{grid-template-columns:1fr!important;padding:10px!important}
+      .product-card{min-height:62px!important;padding:13px!important}
+      .product-name{font-size:14px!important}
+      #previewPanel .preview-wrap{padding:12px!important}
+      #previewPanel .preview-label{width:100%!important}
+    }
+
+  </style>
+
+<style>
+
+</style>
+
+
+<style>
+#productList{display:flex!important;flex-direction:column!important;gap:10px!important}
+.product-group{display:block!important;margin:0!important;padding:0!important;border:1.5px solid #d8e0ea!important;border-radius:14px!important;background:#fff!important;overflow:hidden!important}
+.product-group .group-toggle{width:100%!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:15px!important;margin:0!important;border:0!important;border-bottom:0!important;border-radius:0!important;background:#f7f9fc!important;text-align:left!important;cursor:pointer!important;min-height:76px!important}
+.product-group.is-open .group-toggle{background:#fff1f3!important;border-bottom:1px solid #e7dce0!important}
+.group-heading{display:flex!important;flex-direction:column!important;gap:5px!important;min-width:0!important}
+.group-heading b{font-size:15px!important;font-weight:900!important;color:#17263b!important}
+.group-heading small{font-size:11px!important;line-height:1.35!important;color:#68778c!important;font-weight:650!important}
+.group-count{display:flex!important;align-items:center!important;gap:8px!important;white-space:nowrap!important;font-size:10px!important;font-weight:900!important;color:#c8102e!important}
+.group-chevron{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;border-radius:50%!important;background:#c8102e!important;color:white!important;font-size:19px!important}
+.product-group-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:12px!important}
+@media(max-width:560px){
+ .product-group .group-toggle{min-height:72px!important;padding:13px!important}
+ .group-heading b{font-size:14px!important}
+ .group-heading small{font-size:10px!important}
+ .group-count{font-size:9px!important;gap:5px!important}
+ .group-chevron{width:30px!important;height:30px!important;font-size:20px!important}
+ .product-group-items{grid-template-columns:1fr!important;padding:10px!important}
+ .product-card{min-height:62px!important;padding:13px!important}
+ .product-name{font-size:14px!important}
+}
+</style>
+
+
+<style>
+
+</style>
+
+
+<style>
+.photo-find{margin:12px 0 16px;padding:14px;border:1px solid #dbe3ed;border-radius:14px;background:#f8fafc}
+.photo-find-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.photo-find-head b{display:block;font-size:14px;color:#14243a}
+.photo-find-head small{display:block;font-size:11px;color:#64748b;margin-top:4px}
+.photo-btn{border:0;border-radius:10px;padding:11px 14px;background:#cf1236;color:#fff;font-weight:900;font-size:12px;white-space:nowrap}
+.photo-status{font-size:11px;color:#64748b;margin-top:10px;line-height:1.45}
+#photoPreview{display:block;max-width:100%;max-height:180px;object-fit:contain;margin:10px auto 0;border-radius:10px}
+.photo-match{margin-top:10px;padding:12px;border-radius:10px;background:#fff;border:1px solid #cbd5e1;font-size:12px}
+.photo-match button{margin:8px 6px 0 0;border:0;border-radius:8px;padding:9px 12px;background:#14243a;color:white;font-weight:800}
+.photo-match .secondary{background:#e8edf4;color:#14243a}
+@media(max-width:560px){.photo-find{padding:12px}.photo-find-head{align-items:flex-start;flex-direction:column}.photo-btn{width:100%;min-height:44px}}
+</style>
+<style>
+#productPanel .panel-head{position:relative;padding-right:118px}
+.photo-quick{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:5}
+.photo-quick-btn{display:flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:10px;padding:10px 12px;background:#cf1236;color:#fff;font-size:12px;font-weight:900;white-space:nowrap;min-height:40px}
+.photo-pop{position:absolute;right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 42px));padding:12px;border:1px solid #d4dce7;border-radius:12px;background:#fff;box-shadow:0 12px 30px #17263b26;z-index:20}
+.photo-status{font-size:11px;color:#536276;line-height:1.45}
+#photoPreview{display:block;max-width:100%;max-height:145px;object-fit:contain;margin:8px auto 0;border-radius:8px}
+.photo-match{margin-top:8px;padding:10px;border-radius:9px;background:#f8fafc;border:1px solid #d4dce7;font-size:12px}
+.photo-match button{margin:8px 6px 0 0;border:0;border-radius:8px;padding:9px 11px;background:#14243a;color:#fff;font-weight:800}
+.photo-match .secondary{background:#e8edf4;color:#14243a}
+@media(max-width:560px){
+ #productPanel .panel-head{padding:13px 94px 13px 13px;min-height:78px}
+ #productPanel .panel-title{gap:8px}
+ #productPanel .panel-title h3{font-size:14px}
+ #productPanel .panel-title p{font-size:10px;line-height:1.3}
+ .photo-quick{right:10px}
+ .photo-quick-btn{min-height:42px;padding:9px 10px;font-size:11px}
+ .photo-quick-btn span{display:none}
+ .photo-pop{right:0;width:min(280px,calc(100vw - 32px))}
+}
+</style>
+<style id="extraFeedbackStyles">
+#extraFeedbackPage[hidden],.app-shell [hidden]{display:none!important}
+.extra-page-tabs{display:flex;gap:8px;margin:0 0 14px;padding:8px;background:#fff;border:1px solid #e4e9f0;border-radius:13px}
+.extra-tab{flex:1;border:1px solid #dbe2eb;background:#f7f9fc;color:#34445a;border-radius:10px;padding:12px 9px;font-size:12px;font-weight:900}
+.extra-tab.active{background:#14243a;color:#fff;border-color:#14243a}
+.extra-two-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:15px}
+.extra-message-card{min-width:0;border:1px solid #dce3ec;border-radius:12px;padding:10px;background:#f8fafc}
+.extra-preview{width:100%;aspect-ratio:2/1;border:1px solid #111;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:9px;gap:7px;overflow:hidden}
+.extra-preview small{font-size:9px;letter-spacing:.5px;font-weight:900}.extra-preview .brand{font-size:10px;border:1px solid #111;padding:2px 8px;letter-spacing:1px}.extra-preview .heading{font-size:8px}
+.extra-preview strong{font-size:clamp(10px,1.2vw,14px);line-height:1.15;font-weight:900}
+.extra-card-actions{display:flex;align-items:center;gap:6px;margin-top:9px;flex-wrap:wrap}
+.extra-card-actions button,.extra-custom-controls button{border:0;border-radius:8px;padding:9px 10px;background:#14243a;color:#fff;font-size:10px;font-weight:900}
+.extra-card-actions .extra-refresh{background:#e8edf4;color:#14243a}
+.extra-card-actions label,.extra-custom-controls label{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:850;color:#46566b}
+.extra-card-actions input,.extra-custom-controls input,.extra-custom-controls select{width:58px;height:34px;border:1px solid #cbd5e1;border-radius:7px;padding:0 6px;background:#fff}
+.extra-card-actions .extra-add{flex:1}
+.extra-custom{margin:0 15px 15px;padding:14px;border:1px dashed #9aa8ba;border-radius:12px;background:#fbfcfe}
+.extra-custom>b{display:block;font-size:13px;color:#14243a}.extra-custom>small{display:block;margin:4px 0 10px;color:#64748b;font-size:10px}
+#extraCustomText{width:100%;min-height:70px;border:1px solid #cbd5e1;border-radius:8px;padding:10px;font:600 13px/1.4 Arial,sans-serif;resize:vertical}
+.extra-custom-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;margin-top:9px}
+.extra-custom-controls label{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.extra-custom-controls button{flex:1;min-height:36px}
+.extra-custom-preview{margin-top:10px;aspect-ratio:2/1;width:100%;border:1px solid #111;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;text-align:center;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;font-weight:900}
+.extra-custom-preview.small{font-size:12px}.extra-custom-preview:not(.small):not(.large):not(.xlarge):not(.xxlarge){font-size:16px}.extra-custom-preview.large{font-size:22px}.extra-custom-preview.xlarge{font-size:27px}.extra-custom-preview.xxlarge{font-size:33px}
+.extra-queue-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 17px;border-top:1px solid #e4e9f0}
+.extra-queue-head b{display:block;font-size:13px}.extra-queue-head small{display:block;color:#64748b;font-size:10px;margin-top:3px}
+#extraQueueCount{font-size:10px;color:#14243a;background:#eef1f5;padding:7px 9px;border-radius:20px;white-space:nowrap}
+.extra-queue{padding:0 17px}
+.extra-queue-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f4;font-size:11px}
+.extra-queue-row small{display:block;color:#64748b;margin-top:3px}
+.extra-queue-row input{width:60px;height:32px;border:1px solid #cbd5e1;border-radius:7px;padding:0 5px}
+.extra-queue-row button{border:1px solid #f2c5cc;background:#fff7f8;color:#b4233c;border-radius:7px;padding:7px 8px;font-size:10px;font-weight:800}
+.extra-queue-actions{display:flex;justify-content:space-between;gap:9px;padding:13px 17px 17px}
+.extra-queue-actions .primary-btn{width:auto;margin:0;padding:10px 18px}
+@media(max-width:560px){.extra-tab{font-size:10px;padding:10px 5px}.extra-two-cards{grid-template-columns:1fr;padding:11px}.extra-custom{margin:0 11px 12px}.extra-card-actions{gap:5px}.extra-queue-actions .primary-btn{flex:1}}
+</style>
+
+
+<style id="blankTicketPreviewSizeFix">
+/* Boş adisyon önizlemesi: gerçek 50 × 30 mm oranı, ekranda kompakt görünüm. */
+#extraCustomPreview{
+  width:100%;
+  max-width:320px;
+  height:auto;
+  aspect-ratio:2 / 1;
+  margin:10px auto 0;
+  padding:8px;
+  border:1px solid #111;
+  border-radius:3px;
+  background:#fff;
+  color:#000;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+}
+#extraCustomPreview.small{font-size:12px}
+#extraCustomPreview:not(.small):not(.large):not(.xlarge):not(.xxlarge){font-size:16px}
+#extraCustomPreview.large{font-size:22px}
+#extraCustomPreview.xlarge{font-size:27px}
+#extraCustomPreview.xxlarge{font-size:33px}
+</style>
+
+</head>
+<body>
+<div class="app-shell">
+
+<nav id="extraPageTabs" class="extra-page-tabs" aria-label="Etiket bölümleri">
+  <button type="button" class="extra-tab active" data-extra-page="products">Ürün etiketleri</button>
+  <button type="button" class="extra-tab" data-extra-page="feedback">Müşteri değerlendirme etiketleri</button>
+</nav>
+<section id="extraFeedbackPage" hidden>
+  <section class="panel extra-feedback-panel">
+    <div class="panel-head">
+      <div class="panel-title"><div class="step">★</div><div><h3>Müşteri değerlendirme etiketleri</h3><p>Mesajlar NIIMBOT B2 için tek 50 × 30 mm etikete göre kısaltıldı.</p></div></div>
+    </div>
+    <div class="extra-two-cards">
+      <article class="extra-message-card">
+        <div class="extra-preview" id="extraPreviewA"><small>MUTLULUĞUNUZ BİZİM İÇİN ÖNEMLİ</small><strong>Deneyiminizi bizimle paylaşır mısınız?</strong></div>
+        <div class="extra-card-actions"><button type="button" class="extra-refresh" id="extraRefreshA">↻ Yenile</button><label>Adet <input type="number" id="extraQtyA" min="1" max="500" value="1"></label><button type="button" class="extra-add" id="extraAddA">Listeye ekle</button></div>
+      </article>
+      <article class="extra-message-card">
+        <div class="extra-preview" id="extraPreviewB"><small>GÖRÜŞLERİNİZ BİZİ GELİŞTİRİR</small><strong>Bizi değerlendirmeniz bizi çok mutlu eder.</strong></div>
+        <div class="extra-card-actions"><button type="button" class="extra-refresh" id="extraRefreshB">↻ Yenile</button><label>Adet <input type="number" id="extraQtyB" min="1" max="500" value="1"></label><button type="button" class="extra-add" id="extraAddB">Listeye ekle</button></div>
+      </article>
+    </div>
+    <section class="extra-custom">
+      <b>✍️ Boş adisyon</b>
+      <small>İstediğin kısa mesajı tek 50 × 30 mm etikete bas.</small>
+      <textarea id="extraCustomText" rows="3" maxlength="180" placeholder="Etikete yazılacak metin..."></textarea>
+      <div class="extra-custom-controls">
+        <label>Yazı boyutu <select id="extraCustomSize"><option value="small">Küçük</option><option value="medium" selected>Normal</option><option value="large">Büyük</option><option value="xlarge">Çok büyük</option><option value="xxlarge">Ekstra büyük</option></select></label>
+        <label>Adet <input type="number" id="extraCustomQty" min="1" max="500" value="1"></label>
+        <button type="button" id="extraCustomAdd">Boş adisyonu ekle</button>
+      </div>
+      <div id="extraCustomPreview" class="extra-custom-preview">YAZINIZ BURADA GÖRÜNECEK</div>
+    </section>
+    <div class="extra-queue-head"><div><b>Müşteri etiketleri yazdırma listesi</b><small>Her müşteri mesajı tek, 50 × 30 mm tek etiket olarak basılır. PNG paylaşımı NIIMBOT uygulamasında görsel baskı testi içindir.</small></div><strong id="extraQueueCount">0 ETİKET</strong></div>
+    <div id="extraQueue" class="extra-queue"><div class="empty-queue">Henüz etiket eklenmedi.</div></div>
+    <div class="extra-queue-actions"><button type="button" class="danger-btn" id="extraClear">Listeyi temizle</button><button type="button" class="primary-btn" id="extraPrint" disabled>⎙ YAZDIR</button></div>
+  </section>
+</section>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-label="Domino's"><span class="domino-red"><i></i><i></i></span><span class="domino-blue"><i></i></span></div>
+      <div><small>DOMINO'S • MUTFAK OPERASYON</small><h1>Mutfak Etiket Merkezi</h1><p>Raf ömrü hesaplama · 50 × 30 mm tek etiket · Telefon uyumlu</p></div>
+    </div>
+    <div class="top-actions">
+      <button class="top-btn" id="installBtn" hidden>＋ Uygulamayı yükle</button>
+      <button class="top-btn" id="printSettingsBtn">🖨 Baskı Ayarı</button>
+      <button class="top-btn" id="settingsBtn">⚙ Ayarlar</button>
+      <button class="top-btn" id="helpBtn">Nasıl kullanılır?</button>
+    </div>
+  </header>
+  <div id="printTuning" style="display:none;background:#fff;border:1px solid #dbe2ea;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 4px 14px #0001">
+    <b>🖨 Baskı konum ayarı</b><p style="font-size:12px;color:#667085;margin:5px 0 12px">Çıktıdaki kaymayı küçük adımlarla düzelt. Mükemmel olduğunda ayarı kaydet; bozulursa geri yükle.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+      <label style="font-size:12px">Yatay kaydırma (mm)<input id="printX" type="number" step="0.5" value="0" style="display:block;width:100px;padding:8px;border:1px solid #ccd4df;border-radius:8px"></label>
+      <label style="font-size:12px">Dikey kaydırma (mm)<input id="printY" type="number" step="0.5" value="0" style="display:block;width:100px;padding:8px;border:1px solid #ccd4df;border-radius:8px"></label>
+      <label style="font-size:12px">Ölçek (%)<input id="printScale" type="number" step="0.5" min="90" max="110" value="100" style="display:block;width:100px;padding:8px;border:1px solid #ccd4df;border-radius:8px"></label>
+      <button id="savePrintPreset" class="top-btn" style="background:#16834d;color:white">💾 Mükemmel ayarı kaydet</button>
+      <button id="restorePrintPreset" class="top-btn" style="background:#24364b;color:white">↩ Kaydedilen ayarı geri yükle</button>
+      <button id="resetPrintTune" class="top-btn" style="background:#777">Sıfırla</button>
+    </div><small id="printTuneStatus" style="display:block;margin-top:9px;color:#667085">Ayarlar bu bilgisayarda saklanır.</small>
+  </div>
+
+  <main class="workspace">
+    <section class="panel" id="productPanel">
+      <div class="panel-head">
+        <div class="panel-title"><div class="step">1</div><div><h3>Ürün seçimi</h3><p>Sırasıyla Soslar, Diğerleri veya Günlük Etiketler kategorisinden ürün seç.</p></div></div>
+        <div class="photo-quick" id="photoFind">
+          <button type="button" class="photo-quick-btn" id="photoBtn" aria-label="Ürün fotoğrafı çek">📷 <span>Fotoğraf</span></button>
+          <input id="productPhoto" type="file" accept="image/*" capture="environment" hidden>
+          <div class="photo-pop" id="photoPop" hidden>
+            <div id="photoStatus" class="photo-status" aria-live="polite">Ürün ambalajının fotoğrafını çek.</div>
+            <img id="photoPreview" alt="Çekilen ürün fotoğrafı" hidden>
+            <div id="photoMatch" class="photo-match" hidden></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="field-grid">
+          <div class="field"><label id="dateLabel" for="startDate">AÇILIŞ / HESAPLAMA TARİHİ</label><input type="date" id="startDate"></div>
+          <div class="field"><label for="startTime">SAAT</label><input type="time" id="startTime" value="10:00"></div>
+        </div>
+
+
+        <div class="category-title" id="categoryTitle">ÜRÜNLER · KATEGORİLERİNE GÖRE LİSTELENDİ</div>
+        <div class="product-list" id="productList" aria-label="Ürün listesi"></div>
+        <div class="selected-banner"><div><b id="selectedName">Henüz ürün seçilmedi</b><br><span id="selectedCategory">Listeden bir ürün seç.</span></div><span id="selectedDuration">—</span></div>
+      </div>
+    </section>
+
+    <section class="panel" id="previewPanel" aria-hidden="true">
+      <div class="panel-head">
+        <div class="panel-title"><div class="step">1</div><div><h3>Etiket ön izlemesi</h3><p>Son halini yazdırmadan önce kontrol et.</p></div></div>
+      </div>
+      <div class="preview-wrap">
+        <div class="preview-label" id="previewLabel">
+          <div class="label-top"><span class="label-tag" id="previewDayTag">GÜN</span></div>
+          <div class="label-product" id="previewProduct">ÜRÜN SEÇİN</div>
+          <div class="label-bottom">
+            <div class="label-date-block"><small id="previewStartLabel">İLK KULLANIM</small><strong id="previewStart">—</strong></div>
+            <div class="label-date-block exp"><small>SON KULLANIM</small><strong id="previewEnd">—</strong></div>
+          </div>
+        </div>
+        <div class="skt-box" id="sktBox"><label for="sktDate">CARAVEL / AMBALAJ ÜZERİNDEKİ GEÇERLİ SKT</label><input type="date" id="sktDate"><div class="warning-line">Bu üründe raf ömrü tablosu “SKT” diyor. Üretici ambalajındaki tarihi girmeden etiket oluşturulmaz.</div></div>
+        <div class="skt-box" id="notDefinedBox"><div class="warning-line">Bu ürün ve saklama durumu için tabloda süre belirtilmemiş (—). Yanlış tarih üretmemek için etiket oluşturma kapalıdır.</div></div>
+        <button class="primary-btn" id="addBtn" disabled>＋ TEK ETİKETİ LİSTEYE EKLE</button>
+      </div>
+    </section>
+  </main>
+
+  <section class="panel queue-panel">
+    <div class="queue-head"><div><h3>Yazdırma listesi</h3><p>Her ürün için tek, 50 × 30 mm (5 × 3 cm) etiket basılır.</p></div><span class="queue-count" id="queueCount">0 ETİKET</span></div>
+    <div class="queue-list" id="queueList"><div class="empty-queue"><strong>Henüz etikete eklenen ürün yok</strong>Önce ürün seçip “Etiket listesine ekle” düğmesine bas.</div></div>
+    <div class="queue-actions">
+      <button class="danger-btn" id="clearBtn">Listeyi temizle</button>
+      <div class="right">
+        <span class="print-layout">BASKI: 50 × 30 MM · TEK ETİKET</span>
+        <button class="primary-btn" id="printBtn" style="width:auto;margin:0;padding:11px 18px" disabled>⎙ YAZDIR</button><button class="primary-btn" id="singlePdfBtn" style="width:auto;margin:0;padding:11px 18px;background:#1769aa" disabled>📄 PDF KAYDET</button>
+      </div>
+    </div>
+  </section>
+  <p class="footnote">Kaynak: Yüklediğin “Ürün Raf Ömrü Tablosu” ve “Donuk Ürün Raf Ömrü Hesaplama Tablosu”. Uygulama, seçilen saklama durumundaki süreyi esas alır. Resmî ürün prosedürü ve ambalaj üzerindeki SKT her zaman önceliklidir.</p>
+</div>
+<div id="printArea" aria-hidden="true"></div>
+
+<div class="modal-backdrop" id="helpModal"><div class="modal"><div class="modal-head"><h3>Uygulama nasıl kullanılır?</h3><button class="modal-close" data-close="helpModal">✕</button></div>
+  <p><b>1.</b> Soslar, Diğerleri veya Günlük Etiketler kategorisinden ürün seç. -18°C ürünleri Diğerleri bölümündedir.</p>
+  <p><b>3.</b> Başlangıç tarihini ve saatini gir. 24 saatlik operasyon ürünlerinde son kullanım etiketi bir sonraki takvim gününe, 23:59'a ayarlanır.</p>
+  <p><b>4.</b> Saat cinsinden raf ömrü olan ürünlerde (ör. 2, 3 veya 8 saat) süre tam saat olarak eklenir. Ay ve gün süreleri tabloda yazdığı şekilde uygulanır.</p>
+  <p><b>5.</b> “SKT” yazan ürünlerde Caravel/ambalaj üzerindeki geçerli son kullanma tarihini gir. Tabloda süre yoksa uygulama tarih üretmez.</p>
+  <p><b>Yazdırma:</b> Her kayıt tek 50 × 30 mm etikettir. Yazdırmada özel kâğıt ölçüsü 50 × 30 mm, kenar boşluğu 0, ölçek %100 ve üstbilgi/altbilgi kapalı seçilmelidir.</p>
+</div></div>
+<div class="modal-backdrop" id="settingsModal"><div class="modal"><div class="modal-head"><h3>Uygulama ayarları</h3><button class="modal-close" data-close="settingsModal">✕</button></div>
+  <p>Etiketlerde şube alanı kullanılmaz. Ürün ve tarih bilgileri otomatik hazırlanır.</p>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODUCTS = [
+  // ET · TAVUK · PATATES — Operasyonda açılmış ürün sütunu
+  {id:'finger',name:'Çıtır Finger',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'tavuk-top',name:'Çıtır Tavuk Topları',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'kickers',name:'Tavuk Parçaları (Kickers)',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'patates',name:'Patates',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'pastirma',name:'Pastırma',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'sucuk',name:'Sucuk',category:'Et · Tavuk · Patates',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  // PEYNİRLER
+  {id:'cheddar-sos',name:'Cheddar Sos',category:'Soslar',ops:{u:'day',v:30,note:'Makeline Alt ve Üst Dolap'}},
+  {id:'cubuk-moz',name:'Çubuk Mozarella Peyniri',category:'Peynirler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'olgun-peynir',name:'Olgunlaştırılmış Peynir',category:'Peynirler',ops:{u:'day',v:1,note:'Makeline Alt Dolabı'}},
+  // SEBZELER
+  {id:'domates',name:'Domates (Kesilmiş)',category:'Sebzeler',ops:{u:'hour',v:2,note:'Kesilmiş · Makeline Alt Dolabı'}},
+  {id:'jalapeno',name:'Acı Meksika Biberi (Jalapeno)',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'mantar',name:'Mantar',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'misir',name:'Mısır',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'siyah-zeytin',name:'Siyah Zeytin',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'sogan',name:'Soğan',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'yesil-biber',name:'Yeşil Biber',category:'Sebzeler',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  // TATLI
+  {id:'sufle',name:'Çikolatalı Sufle',category:'Tatlı',ops:{u:'day',v:1,note:'24 saat · Makeline Alt Dolabı'}},
+  {id:'cikolata-sos',name:'Çikolata Sos',category:'Tatlı',ops:{u:'month',v:2,note:"Oda sıcaklığında · Cut Table'da"}},
+  // SOSLAR — yalnızca operasyon süresi sayısal olanlar
+  {id:'balli-hardal',name:'Ballı Hardal Sos',category:'Soslar',ops:{u:'day',v:7,note:'Cut Table veya Makeline İstasyonunda'}},
+  {id:'barbeku',name:'Barbekü Sos',category:'Soslar',ops:{u:'day',v:15,note:'Cut Table veya Makeline İstasyonunda'}},
+  {id:'dominos-sos',name:"Domino's Sos",category:'Soslar',ops:{u:'day',v:7,note:'Cut Table veya Makeline İstasyonunda'}},
+  {id:'ketcap',name:'Ketçap',category:'Soslar',ops:{u:'day',v:40,note:'Makeline Alt Dolabı'}},
+  {id:'mayonez',name:'Mayonez',category:'Soslar',ops:{u:'day',v:40,note:'Makeline Alt Dolabı'}},
+  {id:'pizza-sosu',name:'Pizza Sosu',category:'Soslar',ops:{u:'hour',v:8,note:'Hamur Açma Tezgâhında'}},
+  {id:'sarimsak-sosu',name:'Sarımsak Sosu',category:'Soslar',ops:{u:'day',v:4,note:'Cut Table veya Makeline İstasyonunda'}},
+  {id:'tereyag-sosu',name:'Tereyağ Sosu',category:'Soslar',ops:{u:'day',v:4,note:'Cut Table veya Makeline İstasyonunda'}},
+  // YAĞ · BAHARAT
+  {id:'aci-chilli',name:'Acı Chilli Baharatı',category:'Yağ & Baharat',ops:{u:'day',v:30,note:'Hamur Açma Tezgâhında'}},
+  {id:'kekik',name:'Kekik',category:'Yağ & Baharat',ops:{u:'day',v:30,note:"Cut Table'da"}},
+  {id:'misir-unu',name:'Mısır Unu',category:'Yağ & Baharat',ops:{u:'day',v:30,note:'Hamur Açma Tezgâhında Kapalı'}},
+  {id:'pudra-sekeri',name:'Pudra Şekeri',category:'Yağ & Baharat',ops:{u:'day',v:30,note:"Cut Table'da"}},
+  {id:'tarcin-seker',name:'Tarçın Şeker',category:'Yağ & Baharat',ops:{u:'day',v:30,note:'Baharat Kabı İçerisinde'}},
+  {id:'susam',name:'Susam',category:'Yağ & Baharat',ops:{u:'day',v:30,note:"Cut Table'da"}},
+  {id:'yoresel-baharat',name:'Yöresel Lezzetler Baharatı',category:'Yağ & Baharat',ops:{u:'day',v:30,note:"Cut Table'da"}},
+  // DUBLEKS
+  {id:'dublex-buyuk',name:'Büyük Boy Dubleks',category:'Dubleks',ops:{u:'day',v:1,note:'Kendi poşetinde yeşil kasada'}},
+  {id:'dublex-orta',name:'Orta Boy Dubleks',category:'Dubleks',ops:{u:'day',v:1,note:'Kendi poşetinde yeşil kasada'}},
+  // HAMUR / EKMEK
+  {id:'sarimsakli-hamur',name:'Sarımsaklı Ekmek Hamuru / Domdom Burger Hamuru / Tereyağlı Ekmek',category:'Taze Ekmekler',ops:{u:'hour',v:3,note:'Yağlı kâğıda sarılı, hamur tezgâhındaki hamur kasaları arasında'}},
+{id:'pizza-sos',name:'Pizza Sosu',category:'Soslar',ops:{u:'hour',v:8,note:'8 saat · Günlük kullanım'}},];
+const FROZEN = [
+  {id:'f-finger',name:'Çıtır Tavuk Finger',category:'Donuk Ürünler',total:7,thaw:0},
+  {id:'f-top',name:'Çıtır Tavuk Topları',category:'Donuk Ürünler',total:7,thaw:0},
+  {id:'f-kickers',name:'Tavuk Parçaları (Kickers)',category:'Donuk Ürünler',total:7,thaw:0},
+  {id:'f-sufle',name:'Çikolatalı Sufle',category:'Donuk Ürünler',total:7,thaw:0},
+  {id:'f-dub10',name:'10” Dubleks Taban',category:'Donuk Ürünler',total:8,thaw:0},
+  {id:'f-dub13',name:'13” Dubleks Taban',category:'Donuk Ürünler',total:8,thaw:0},
+  {id:'f-gurme',name:'Gurme Patates',category:'Donuk Ürünler',total:5,thaw:0},
+  {id:'f-tomato',name:'Domates',category:'Donuk Ürünler',total:5,thaw:0},
+  {id:'f-moz',name:'Mozarella Peyniri',category:'Donuk Ürünler',total:8,thaw:1,note:'İlk kullanım ertesi gün · 8 gün toplam'},
+  {id:'f-cubuk',name:'Çubuk Mozarella Peyniri',category:'Donuk Ürünler',total:8,thaw:1,note:'İlk kullanım ertesi gün · 8 gün toplam'}
+];
+
+
+const CATEGORIES=['Et · Tavuk · Patates','Peynirler','Sebzeler','Tatlı','Soslar','Yağ & Baharat','Dubleks','Taze Ekmekler'];
+const CATEGORY_ICONS={'Et · Tavuk · Patates':'🍗','Peynirler':'🧀','Sebzeler':'🥬','Tatlı':'🍫','Soslar':'🥫','Yağ & Baharat':'🧂','Dubleks':'🍕','Taze Ekmekler':'🥖','Donuk Ürünler':'❄️'};
+const MODE_LABELS={walkinOpened:"Walk-in'de açılmış · Kapalı kap",walkinSealed:"Walk-in'de orijinal ambalaj kapalı",operations:'Operasyonda açılmış · Kapaklı kap',frozen:'Donuk ürün · Commissary -18°C çıkışı'};
+const $=id=>document.getElementById(id);
+let mode='operations', selectedId=null, category=null, openGroup=null, queue=[], deferredInstall=null;
+let settings={branch:''};
+try{settings={...settings,...JSON.parse(localStorage.getItem('dominosLabelSettings')||'{}')}}catch(e){}
+try{queue=JSON.parse(localStorage.getItem('dominosLabelQueue')||'[]').map(q=>({...q,copies:1}))}catch(e){queue=[]}
+function localISO(d=new Date()){const pad=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function parseDate(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function addMonths(d,n){const x=new Date(d),day=x.getDate();x.setDate(1);x.setMonth(x.getMonth()+n);const last=new Date(x.getFullYear(),x.getMonth()+1,0).getDate();x.setDate(Math.min(day,last));return x}
+function fmtDate(d){return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function fmtLong(d){return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'})}
+const WEEKDAY_COLORS={pazartesi:'#0077B6',salı:'#F2C500',çarşamba:'#16803C',perşembe:'#4B2926',cuma:'#111111',cumartesi:'#D7193F',pazar:'#F36B00'};
+function weekdayColor(day){return WEEKDAY_COLORS[String(day||'').toLocaleLowerCase('tr-TR')]||'#202124'}
+function weekdayInk(day){const d=String(day||'').toLocaleLowerCase('tr-TR');return ['salı','pazar'].includes(d)?'#111111':'#ffffff'}
+function weekday(d){return d.toLocaleDateString('tr-TR',{weekday:'long'})}
+function fmtDuration(x){if(x==='SKT')return 'Üretici SKT';if(!x)return 'Süre belirtilmemiş';const u=x.u;return `${x.v} ${u==='day'?'gün':u==='hour'?'saat':'ay'}${x.note?' · '+x.note:''}`}
+function currentProduct(){return [...FROZEN,...PRODUCTS].find(p=>p.id===selectedId)||null}
+function ruleFor(p){if(!p)return null;if(mode==='frozen')return {u:'day',v:p.total,note:p.note||''};return p[mode==='walkinOpened'?'walkin':mode==='walkinSealed'?'sealed':'ops']}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showToast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove('show'),2400)}
+function setMode(m){mode=m;selectedId=null;category=null;document.querySelectorAll('.mode-tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('dateLabel').textContent=m==='frozen'?'COMMISSARY -18°C ÇIKIŞ TARİHİ':'AÇILIŞ / HESAPLAMA TARİHİ';$('startDate').value=localISO();$('sktDate').value='';renderCategories();renderProducts();renderPreview()}
+function renderCategories(){renderProducts();}
+function listProducts(){return [...FROZEN,...PRODUCTS]}
+function sortSktLast(items){return [...items].sort((a,b)=>Number(a.ops==='SKT')-Number(b.ops==='SKT'))}
+function renderProducts(){
+ // Aylık etiketler: 1 ay (30 gün), 45 gün ve 6 ay (180 gün) süreli ürünler.
+ // Tabloda süre ay birimiyle veya gün birimiyle tutulabildiğinden ikisini de kontrol et.
+ const isMonthlyLabel=p=>{
+   const r=p && p.ops;
+   if(!r) return false;
+   return (r.u==='month' && (r.v===1 || r.v===6)) ||
+          (r.u==='day' && (r.v===30 || r.v===45 || r.v===180));
+ };
+ const monthly=PRODUCTS.filter(isMonthlyLabel);
+ const monthlyIds=new Set(monthly.map(p=>p.id));
+ const sauces=PRODUCTS.filter(p=>p.category==='Soslar' && !monthlyIds.has(p.id));
+ // Günlük etiketler: operasyonda açılmış ve raf ömrü tam 1 gün olan ürünler.
+ const daily=PRODUCTS.filter(p=>p.category!=='Soslar' && !monthlyIds.has(p.id) && p.ops && p.ops.u==='day' && p.ops.v===1);
+ const dailyIds=new Set(daily.map(p=>p.id));
+ const others=[...FROZEN,...PRODUCTS.filter(p=>p.category!=='Soslar' && !dailyIds.has(p.id) && !monthlyIds.has(p.id))];
+ const groups=[
+  {name:'SOSLAR',icon:'🥫',items:sauces,kind:'operations',desc:'Operasyonda kullanılan soslar'},
+  {name:"WALK-IN'DE ORİJİNAL AMBALAJINDA",icon:'📦',items:others,kind:'mixed',desc:'Walk-in’de orijinal ambalajında saklanan ürünler'},
+  {name:'GÜNLÜK ETİKETLER',icon:'🗓️',items:daily,kind:'operations',desc:'24 saatlik operasyon ürünleri'},
+  {name:'AYLIK ETİKETLER',icon:'📅',items:monthly,kind:'operations',desc:'1 ay, 45 gün ve 6 ay süreli ürünler'}
+ ];
+ const host=$('productList');
+ if(!host) return;
+ host.innerHTML=groups.map((g,idx)=>`
+  <section class="product-group ${openGroup===idx?'is-open':''}" data-group="${idx}">
+   <button type="button" class="products-title group-toggle" data-toggle-group="${idx}" aria-expanded="${openGroup===idx}">
+    <span class="group-heading"><b>${g.icon} ${g.name}</b><small>${g.desc}</small></span>
+    <span class="group-count">${g.items.length} ÜRÜN <span class="group-chevron">${openGroup===idx?'−':'+'}</span></span>
+   </button>
+   ${openGroup===idx?`<div class="product-group-items">
+    ${g.items.length ? g.items.map(p=>{
+      const frozen=p.category==='Donuk Ürünler';
+      const rule=frozen?{u:'day',v:p.total}:p.ops;
+      const label=rule?fmtDuration(rule):'Süre belirtilmemiş';
+      return `<div class="product-card-row">
+       <button type="button" class="product-card ${selectedId===p.id?'selected':''}" data-id="${safe(p.id)}">
+        <span class="product-name">${safe(p.name)}</span>
+        <span class="product-meta"><span class="duration-chip">${safe(label)}</span><small>${selectedId===p.id?'SEÇİLDİ':'SEÇ'}</small></span>
+       </button>
+       <button type="button" class="product-add-btn" data-add-id="${safe(p.id)}" aria-label="${safe(p.name)} listeye ekle">＋ Listeye ekle</button>
+      </div>`;
+    }).join('') : '<div class="empty">Bu kategoride ürün bulunmuyor.</div>'}
+   </div>`:''}
+  </section>`).join('');
+ host.querySelectorAll('.group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+   const idx=Number(btn.dataset.toggleGroup);
+   openGroup=openGroup===idx?null:idx;
+   renderProducts();
+ }));
+ host.querySelectorAll('.product-card').forEach(btn=>btn.addEventListener('click',()=>{
+   selectedId=btn.dataset.id;
+   const product=currentProduct();
+   mode=product && product.category==='Donuk Ürünler'?'frozen':'operations';
+   $('dateLabel').textContent=mode==='frozen'?'COMMISSARY -18°C ÇIKIŞ TARİHİ':'AÇILIŞ / HESAPLAMA TARİHİ';
+   $('sktDate').value='';
+   renderProducts();
+   renderPreview();
+ }));
+ host.querySelectorAll('.product-add-btn').forEach(btn=>btn.addEventListener('click',()=>{
+   selectedId=btn.dataset.addId;
+   const product=currentProduct();
+   mode=product && product.category==='Donuk Ürünler'?'frozen':'operations';
+   $('dateLabel').textContent=mode==='frozen'?'COMMISSARY -18°C ÇIKIŞ TARİHİ':'AÇILIŞ / HESAPLAMA TARİHİ';
+   $('sktDate').value='';
+   renderProducts();
+   renderPreview();
+   addToQueue();
+ }));
+}
+function calc(p,rule){
+ const base=parseDate($('startDate').value);if(!base)return null;
+ const t=$('startTime').value||'10:00';
+ let start=new Date(base),end=new Date(base),startTime=t,endTime='23:59',durationText='';
+ const [hh,mm]=t.split(':').map(Number);
+ start.setHours(hh,mm,0,0);
+ if(mode==='frozen'){
+   const mozzarellaException = p.id==='f-moz' || p.id==='f-cubuk';
+   start=addDays(base,mozzarellaException?1:(p.thaw||0));start.setHours(hh,mm,0,0);
+   end=addDays(base,p.total-1);end.setHours(23,59,0,0);
+   durationText=`${p.total} gün toplam${p.thaw?` · ${p.thaw} gün çözünme`:''}`;
+ }else if(rule==='SKT'){
+   const skt=parseDate($('sktDate').value);if(!skt)return {needsSkt:true};
+   end=new Date(skt);end.setHours(23,59,0,0);
+   durationText='Girilen geçerli SKT';
+ }else if(!rule){return {notDefined:true};}
+ else if(rule.u==='day'){
+   const isDailyLabel = rule.v===1;
+   if(isDailyLabel){
+     // Günlük etiket: açılış günü ertesi gün 10:00, son kullanım bir sonraki gün aynı saat.
+     start=addDays(base,1);start.setHours(hh,mm,0,0);
+     end=addDays(base,2);end.setHours(hh,mm,0,0);
+     endTime=t;
+   }else{
+     end=addDays(base,rule.v-1);end.setHours(23,59,0,0);
+   }
+   durationText=`${rule.v} gün${rule.note?' · '+rule.note:''}`;
+ }else if(rule.u==='month'){
+   end=addMonths(base,rule.v);end.setHours(23,59,0,0);
+   durationText=`${rule.v} ay${rule.note?' · '+rule.note:''}`;
+ }else if(rule.u==='hour'){
+   const from=new Date(base);from.setHours(hh,mm,0,0);
+   end=new Date(from.getTime()+rule.v*60*60*1000);
+   start=from;startTime=t;
+   endTime=`${String(end.getHours()).padStart(2,'0')}:${String(end.getMinutes()).padStart(2,'0')}`;
+   durationText=`${rule.v} saat${rule.note?' · '+rule.note:''}`;
+ }
+ if(end.getTime()<start.getTime())return {invalid:true};
+ return {start,end,startTime,endTime,durationText,week:weekday(end),startLabel:'İLK KULLANIM'};
+}
+function renderPreview(){
+ const p=currentProduct(),rule=ruleFor(p),add=$('addBtn');
+ $('sktBox').classList.toggle('show',rule==='SKT');$('notDefinedBox').classList.toggle('show',!!p&&!rule);add.disabled=true;
+ if(!p){$('selectedName').textContent='Henüz ürün seçilmedi';$('selectedCategory').textContent='Aşağıdan bir kategori ve ürün seç.';$('selectedDuration').textContent='—';$('previewProduct').textContent='ÜRÜN SEÇİN';$('previewStart').textContent='—';$('previewEnd').textContent='—';$('previewDayTag').textContent='GÜN';$('previewDayTag').style.removeProperty('--day-ink');$('previewLabel').style.setProperty('--day-color','#202124');$('previewLabel').style.setProperty('--day-ink','#fff');return}
+ $('selectedName').textContent=p.name;$('selectedCategory').textContent=p.category;$('selectedDuration').textContent=fmtDuration(rule);$('previewProduct').textContent=p.name.toLocaleUpperCase('tr-TR');
+ const result=calc(p,rule);
+ if(result?.needsSkt){$('previewStart').textContent=fmtDate(parseDate($('startDate').value))+' '+$('startTime').value;$('previewEnd').textContent='SKT GİRİN';$('previewDayTag').textContent='SKT';$('previewLabel').style.setProperty('--day-color','#111');$('previewLabel').style.setProperty('--day-ink','#fff');return}
+ if(result?.notDefined){$('previewStart').textContent='—';$('previewEnd').textContent='HESAPLANAMAZ';$('previewDayTag').textContent='SÜRE YOK';return}
+ if(result?.invalid){$('previewEnd').textContent='TARİHİ KONTROL ET';$('previewDayTag').textContent='TARİH HATASI';return}
+ if(!result)return;
+ $('previewStartLabel').textContent=result.startLabel;
+ $('previewStart').textContent=fmtDate(result.start)+' '+result.startTime;
+ $('previewEnd').textContent=fmtDate(result.end)+' '+result.endTime;
+ const day=weekday(result.end);
+ $('previewDayTag').textContent=day.toLocaleUpperCase('tr-TR');
+ $('previewLabel').style.setProperty('--day-color',weekdayColor(day));
+ $('previewLabel').style.setProperty('--day-ink',weekdayInk(day));
+ 
+ add.disabled=false;
+}
+function buildLabel(p,rule){const r=calc(p,rule);return {id:`${Date.now()}-${Math.random().toString(36).slice(2,7)}`,product:p.name,category:p.category,mode:MODE_LABELS[mode],duration:r.durationText,start:fmtDate(r.start),startTime:r.startTime,end:fmtDate(r.end),endTime:r.endTime,weekday:weekday(r.end),branch:"DOMINO'S" ,copies:1,createdAt:Date.now(),endISO:localISO(r.end)}}
+function persist(){localStorage.setItem('dominosLabelQueue',JSON.stringify(queue));renderQueue()}
+function addToQueue(){const p=currentProduct(),rule=ruleFor(p);if(!p)return;const result=calc(p,rule);if(result?.needsSkt){showToast('Caravel veya ambalaj üzerindeki geçerli SKT tarihini gir.');$('sktDate').focus();return}if(result?.notDefined){showToast('Tabloda bu durum için süre belirtilmemiş.');return}if(result?.invalid){showToast('SKT, başlangıç tarihinden önce olamaz. Tarihleri kontrol et.');return}queue.push(buildLabel(p,rule));persist();showToast(`${p.name} için 1 etiket listeye eklendi.`)}
+function renderQueue(){
+ const total=queue.reduce((sum,q)=>sum+Math.max(1,Number(q.qty)||1),0);$('queueCount').textContent=`${total} ETİKET`;$('printBtn').disabled=!total;$('singlePdfBtn').disabled=!total;
+ if(!queue.length){$('queueList').innerHTML='<div class="empty-queue"><strong>Henüz etikete eklenen ürün yok</strong>Önce ürün seçip “Listeye ekle” düğmesine bas.</div>';return}
+ $('queueList').innerHTML=queue.map((q,i)=>{const qty=Math.max(1,Number(q.qty)||1);return `<div class="queue-item"><div><b>${safe(q.product)}</b><small>${safe(q.start)} ${safe(q.startTime)} → ${safe(q.end)} ${safe(q.endTime)} · ${safe(q.weekday)}</small></div><div class="queue-qty"><button type="button" data-act="minus" data-i="${i}" aria-label="Adedi azalt">−</button><strong>${qty}</strong><button type="button" data-act="plus" data-i="${i}" aria-label="Adedi artır">＋</button></div><button class="danger-btn" data-act="remove" data-i="${i}">Sil</button></div>`}).join('');
+ $('queueList').querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.i),action=b.dataset.act;if(!queue[i])return;if(action==='plus')queue[i].qty=Math.max(1,Number(queue[i].qty)||1)+1;else if(action==='minus'){queue[i].qty=Math.max(1,Number(queue[i].qty)||1)-1;}else if(action==='remove'){queue.splice(i,1);}persist()}));
+}
+function makeProductPNG(q){
+ const canvas=document.createElement('canvas');canvas.width=400;canvas.height=240;const c=canvas.getContext('2d');
+ c.fillStyle='#fff';c.fillRect(0,0,400,240);c.strokeStyle='#000';c.lineWidth=3;c.strokeRect(4,4,392,232);
+ c.fillStyle='#000';c.textAlign='center';c.textBaseline='middle';c.font='bold 25px Arial';c.fillText("DOMINO'S",200,31);
+ c.lineWidth=2;c.beginPath();c.moveTo(18,54);c.lineTo(382,54);c.stroke();
+ let product=String(q.product||'ÜRÜN').toLocaleUpperCase('tr-TR');let font=product.length>17?40:product.length>12?48:58;c.font='900 '+font+'px Arial';
+ while(c.measureText(product).width>360&&font>24){font-=2;c.font='900 '+font+'px Arial'}
+ c.fillText(product,200,108);
+ c.beginPath();c.moveTo(18,145);c.lineTo(382,145);c.stroke();c.beginPath();c.moveTo(200,153);c.lineTo(200,226);c.stroke();
+ c.font='bold 19px Arial';c.fillText('İLK KULLANIM',100,166);c.fillText('SON KULLANIM',300,166);
+ c.font='bold 21px Arial';c.fillText(String(q.start||'').replaceAll('.','/'),100,190);c.fillText(String(q.end||'').replaceAll('.','/'),300,190);
+ c.font='bold 22px Arial';c.fillText(String(q.startTime||'10:00'),100,215);c.fillText(String(q.endTime||'10:00'),300,215);
+ return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+}
+async function shareProductPNG(){
+ if(!queue.length)return;const q=queue[0];const blob=await makeProductPNG(q);if(!blob){showToast('PNG oluşturulamadı.');return}
+ const file=new File([blob],`Dominos_${q.product.replace(/[^\w-]+/g,'_')}_50x30.png`,{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'NIIMBOT B2 etiketi',text:'50×30 mm Domino’s etiketi'});return}}catch(e){if(e.name==='AbortError')return}
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);showToast('PNG kaydedildi. NIIMBOT uygulamasından görseli içe aktar.');
+}
+function printLabelHTML(q){
+ return `<div class="print-label"><div class="p-brand">DOMINO'S</div><div class="p-product">${safe(q.product)}</div><div class="p-grid"><div class="p-date"><span>İLK KULLANIM</span><strong>${safe(q.start)} ${safe(q.startTime)}</strong></div><div class="p-date"><span>SON KULLANIM</span><strong>${safe(q.end)} ${safe(q.endTime)}</strong></div></div></div>`;
+}
+function doPrint(savePdf=false){
+ if(!queue.length){showToast('Önce ürünü etiket listesine ekle.');return;}
+ const oldFrame=document.getElementById('labelPrintFrame');if(oldFrame)oldFrame.remove();
+ const frame=document.createElement('iframe');
+ frame.id='labelPrintFrame';
+ frame.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;border:0;opacity:0;z-index:-1;';
+ document.body.appendChild(frame);
+ const doc=frame.contentDocument;
+ const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const cards=queue.flatMap(q=>Array.from({length:Math.max(1,Number(q.qty)||1)},()=>q)).map(q=>{
+   const product=esc(q.product),start=esc(q.start),startTime=esc(q.startTime),end=esc(q.end),endTime=esc(q.endTime);
+   return `<section class="sheet"><article class="label"><div class="brand">DOMINO'S</div><div class="product">${product}</div><div class="dates"><div class="date"><small>İLK KULLANIM</small><b>${start}<br>${startTime}</b></div><div class="date"><small>SON KULLANIM</small><b>${end}<br>${endTime}</b></div></div></article></section>`;
+ }).join('');
+ const tuning=getPrintTuning();
+ doc.open();
+ doc.write(`<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${savePdf?'Tekli Etiket PDF':'Etiket Baskısı'}</title><style>
+ @page{size:50mm 30mm;margin:0}
+ *{box-sizing:border-box}
+ html,body{width:50mm!important;min-width:50mm!important;max-width:50mm!important;margin:0!important;padding:0!important;background:#fff!important;color:#000!important;font-family:Arial,Helvetica,sans-serif!important}
+ body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ .sheet{transform:translate(${tuning.x}mm,${tuning.y}mm) scale(${tuning.scale/100})!important;transform-origin:top left!important;width:50mm!important;height:30mm!important;display:block!important;margin:0!important;padding:0!important;overflow:hidden!important;position:relative!important;break-after:page!important;page-break-after:always!important}
+ .sheet:last-child{break-after:auto!important;page-break-after:auto!important}
+ .label{width:50mm!important;height:30mm!important;margin:0!important;padding:1.5mm 2mm!important;border:.25mm solid #000!important;position:relative!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;overflow:hidden!important;background:#fff!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .brand{font-family:Arial Black,Arial,sans-serif;font-size:6pt;line-height:1;font-weight:900;text-align:center;letter-spacing:.3pt;margin:0!important}
+ .product{font-family:Arial Black,Arial,sans-serif;font-size:12pt;line-height:1.05;font-weight:900;overflow-wrap:anywhere;max-height:8mm;overflow:hidden;margin:.3mm 0;text-align:center}
+ .dates{display:grid;grid-template-columns:1fr 1fr;gap:1mm;margin-top:auto;padding-top:1mm;border-top:.25mm solid #111;align-items:stretch}
+ .date{display:flex;flex-direction:column;min-width:0;padding:0;text-align:center;gap:.4mm}
+ .date small{font-size:5.3pt;line-height:1.05;font-weight:900;white-space:nowrap;text-align:center}
+ .date b{font-size:6.6pt;line-height:1.1;font-weight:900;white-space:nowrap;overflow:hidden;text-align:center}
+ @media print{html,body{width:50mm!important;min-width:50mm!important;max-width:50mm!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}.sheet{width:50mm!important;height:30mm!important;break-after:page!important;page-break-after:always!important}.label{width:50mm!important;height:30mm!important}}
+ </style></head><body>${cards}</body></html>`);
+ doc.close();
+ const cleanup=()=>{setTimeout(()=>{if(frame.isConnected)frame.remove()},800)};
+ let printed=false; const startPrint=()=>{if(printed||!frame.isConnected)return;printed=true;try{frame.contentWindow.focus();frame.contentWindow.print();cleanup();}catch(e){showToast('Yazdırma penceresi açılamadı. Tarayıcı menüsünden Yazdır seçeneğini deneyin.');cleanup();}};
+ frame.onload=()=>setTimeout(startPrint,450);
+ // Some mobile browsers do not reliably fire iframe.onload after document.write.
+ setTimeout(startPrint,900);
+}
+window.addEventListener('afterprint',()=>{ const area=document.getElementById('printArea'); if(area){area.innerHTML='';area.setAttribute('aria-hidden','true');} });
+
+
+// Fotoğrafla ürün bulma: OCR ambalaj yazısını okur; eşleşme kullanıcı onayıyla seçilir.
+const photoInput=$('productPhoto'), photoBtn=$('photoBtn');
+if(photoBtn && photoInput){
+ photoBtn.addEventListener('click',()=>{
+   const pop=$('photoPop'); if(pop)pop.hidden=!pop.hidden;
+   if(pop && !pop.hidden)photoInput.click();
+  });
+ photoInput.addEventListener('change',async()=>{
+  const file=photoInput.files && photoInput.files[0]; if(!file)return;
+  const status=$('photoStatus'), preview=$('photoPreview'), matchBox=$('photoMatch');
+  const pop=$('photoPop'); if(pop)pop.hidden=false;
+  matchBox.hidden=true; matchBox.innerHTML=''; status.textContent='Fotoğraf hazırlanıyor…';
+  preview.hidden=false; preview.removeAttribute('src');
+  const imageData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Fotoğraf okunamadı'));reader.readAsDataURL(file)});
+  preview.src=imageData;
+  preview.onerror=()=>{status.textContent='Fotoğraf ön izlemesi açılamadı. Başka bir fotoğraf seçmeyi dene.';};
+  preview.onload=()=>{preview.style.display='block';};
+  try{
+   if(!window.Tesseract){
+    status.textContent='Yazı tanıma aracı yükleniyor. İnternet bağlantısı gerekli…';
+    await new Promise((resolve,reject)=>{
+      const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+      s.onload=resolve;s.onerror=()=>reject(new Error('OCR kütüphanesi yüklenemedi'));document.head.appendChild(s);
+    });
+   }
+   status.textContent='Ambalaj üzerindeki yazılar okunuyor…';
+   const result=await Tesseract.recognize(file,'tur+eng',{logger:m=>{
+    if(m.status==='recognizing text')status.textContent=`Yazı okunuyor… %${Math.round((m.progress||0)*100)}`;
+   }});
+   const raw=(result.data.text||'').trim();
+   const norm=s=>String(s||'').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i').replace(/[^a-z0-9]+/g,' ').trim();
+   const text=norm(raw), candidates=[...FROZEN,...PRODUCTS].map(p=>{
+    const name=norm(p.name), tokens=name.split(' ').filter(t=>t.length>2);
+    let score=(text.includes(name)?100:0)+tokens.filter(t=>text.includes(t)).length*12;
+    return {p,score,matched:tokens.filter(t=>text.includes(t)).length,total:tokens.length};
+   }).sort((a,b)=>b.score-a.score);
+   const best=candidates[0];
+   status.textContent=raw?`Okunan yazı: ${raw.slice(0,500)}`:'Fotoğraftan okunabilir ürün adı bulunamadı.';
+   if(best && best.score>=12 && (best.matched>=1)){
+    const p=best.p;
+    matchBox.hidden=false;
+    matchBox.innerHTML=`<b>Olası ürün: ${safe(p.name)}</b><br><span>Bu eşleşme fotoğraftaki yazıya göre önerildi. Raf ömrü/tarih, uygulamadaki kayıtlı ürün tablosundan hesaplanır.</span><br><button type="button" id="confirmPhotoProduct">Ürünü seç</button><button type="button" class="secondary" id="rejectPhotoProduct">Hayır, listeden seçeceğim</button>`;
+    $('confirmPhotoProduct').addEventListener('click',()=>{
+      selectedId=p.id;mode=p.category==='Donuk Ürünler'?'frozen':'operations';
+      if(p.category==='Soslar')openGroup=0;
+      else if(p.category!=='Donuk Ürünler' && p.ops && p.ops.u==='day' && p.ops.v===1)openGroup=2;
+      else openGroup=1;
+      $('dateLabel').textContent=mode==='frozen'?'COMMISSARY -18°C ÇIKIŞ TARİHİ':'AÇILIŞ / HESAPLAMA TARİHİ';
+      renderProducts();renderPreview();status.textContent='Ürün seçildi. Etiket ön izlemesini kontrol et.';
+      $('previewPanel').scrollIntoView({behavior:'smooth',block:'center'});
+    });
+    $('rejectPhotoProduct').addEventListener('click',()=>{matchBox.hidden=true;status.textContent='Ürünü aşağıdaki kategorilerden elle seçebilirsin.'});
+   }else{
+    matchBox.hidden=false;
+    matchBox.innerHTML='<b>Ürün adı net eşleşmedi.</b><br>Fotoğrafı daha yakından, ürün adı okunacak şekilde çek veya aşağıdaki kategoriden ürünü seç.';
+   }
+  }catch(err){
+   status.textContent='Fotoğraf okunamadı. İnternet bağlantısını kontrol et veya ürünü kategoriden elle seç.';
+  }
+ });
+}
+
+
+
+
+
+if(!$('startDate').value)$('startDate').value=localISO();$('dateLabel').textContent='AÇILIŞ / HESAPLAMA TARİHİ';renderProducts();renderPreview();renderQueue();
+
+$('startDate').addEventListener('change',renderPreview);$('startTime').addEventListener('change',renderPreview);$('sktDate').addEventListener('change',renderPreview);$('addBtn').addEventListener('click',addToQueue);$('printBtn').addEventListener('click',doPrint);$('singlePdfBtn').addEventListener('click',()=>doPrint(true));$('clearBtn').addEventListener('click',()=>{if(!queue.length)return;if(confirm('Yazdırma listesindeki tüm etiketler silinsin mi?')){queue=[];persist();showToast('Yazdırma listesi temizlendi.')}});
+$('helpBtn').addEventListener('click',()=>$('helpModal').classList.add('open'));$('settingsBtn').addEventListener('click',()=>$('settingsModal').classList.add('open'));document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$ (b.dataset.close).classList.remove('open')));document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('installBtn').hidden=false});$('installBtn').addEventListener('click',async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installBtn').hidden=true});
+// Bu tek dosyalı sürüm servis çalışanı önbelleği kullanmaz; güncellemeler yenilemeyle gelir.
+</script>
+
+<script id="extraFeedbackLogic">
+(()=>{
+const byId=id=>document.getElementById(id);
+const messages=[["TEŞEKKÜRLER", "Bizi tercih ettiğiniz için teşekkür ederiz."], ["GÖRÜŞÜNÜZ DEĞERLİ", "Deneyiminizi bizimle paylaşır mısınız?"], ["BİZİ DEĞERLENDİRİN", "Yorumunuz bize gelişme fırsatı sunar."], ["MEMNUN KALDINIZ MI?", "Sipariş deneyiminizi puanlayın."], ["HER YORUM ÖNEMLİ", "Görüşünüzü duymak isteriz."], ["DAHA İYİSİ İÇİN", "Öneriniz hizmetimizi geliştirir."], ["BİR PUAN BIRAKIN", "Değerlendirmeniz bizi mutlu eder."], ["SİZİ DİNLEYELİM", "Deneyiminizi paylaşmanız çok değerli."], ["AFİYET OLSUN", "Görüşlerinizi bekliyoruz."], ["TEŞEKKÜR EDERİZ", "Yorumunuz için şimdiden teşekkürler."], ["NASILDIK?", "Lezzet ve hizmetimizi değerlendirin."], ["BİZE DESTEK OLUN", "Kısa yorumunuz bize yardımcı olur."], ["SİZİN İÇİN", "Her gün daha iyi olmak istiyoruz."], ["GÖRÜŞÜNÜZ BİZE YOL", "Önerilerinizi dikkate alıyoruz."], ["MUTLULUĞUNUZ ÖNEMLİ", "Memnuniyetinizi paylaşır mısınız?"], ["BİR YORUM YETER", "Geri bildiriminiz bizim için değerli."], ["LEZZETİ DEĞERLENDİRİN", "Ürünümüz hakkında ne düşünüyorsunuz?"], ["HİZMETİ DEĞERLENDİRİN", "Deneyiminizi bizimle paylaşın."], ["BİRLİKTE GELİŞELİM", "Yorumunuz bize katkı sağlar."], ["TEŞEKKÜRLER", "Bir sonraki siparişinizde görüşmek üzere."]];
+let current=[0,1],queue=[],last=[-1,-1];
+function safe(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function randomIndex(slot){let i;do{i=Math.floor(Math.random()*messages.length)}while(i===last[slot]);last[slot]=i;return i}
+function draw(slot){current[slot]=randomIndex(slot);const m=messages[current[slot]],el=byId(slot?'extraPreviewB':'extraPreviewA');el.innerHTML='<small class="brand">DOMINO\'S</small><small class="heading">'+safe(m[0])+'</small><strong>'+safe(m[1])+'</strong>'}
+function add(item,qty){queue.push({id:'x'+Date.now()+Math.random().toString(36).slice(2,7),item,qty:Math.max(1,Math.min(500,Number(qty)||1))});renderQueue()}
+function renderQueue(){
+ const count=queue.reduce((n,x)=>n+x.qty,0);byId('extraQueueCount').textContent=count+' ETİKET';byId('extraPrint').disabled=!count;
+ byId('extraQueue').innerHTML=queue.length?queue.map(x=>'<div class="extra-queue-row"><div><b>'+safe(x.item.title)+'</b><small>'+safe(x.item.text)+'</small></div><div style="display:flex;align-items:center;gap:5px"><input type="number" min="1" max="500" value="'+x.qty+'" data-xqty="'+x.id+'"><button type="button" data-xdel="'+x.id+'">Sil</button></div></div>').join(''):'<div class="empty-queue">Henüz etiket eklenmedi.</div>';
+ byId('extraQueue').querySelectorAll('[data-xqty]').forEach(el=>el.addEventListener('change',()=>{let x=queue.find(z=>z.id===el.dataset.xqty);if(x){x.qty=Math.max(1,Math.min(500,Number(el.value)||1));renderQueue()}}));
+ byId('extraQueue').querySelectorAll('[data-xdel]').forEach(el=>el.addEventListener('click',()=>{queue=queue.filter(z=>z.id!==el.dataset.xdel);renderQueue()}));
+}
+[0,1].forEach(i=>{
+ byId(i?'extraRefreshB':'extraRefreshA').addEventListener('click',()=>draw(i));
+ byId(i?'extraAddB':'extraAddA').addEventListener('click',()=>{const m=messages[current[i]];add({title:m[0],text:m[1],kind:'preset'},byId(i?'extraQtyB':'extraQtyA').value)});
+});
+const customText=byId('extraCustomText'),customSize=byId('extraCustomSize'),customPreview=byId('extraCustomPreview');
+function updateCustom(){
+ customPreview.textContent=customText.value.trim()||'YAZINIZ BURADA GÖRÜNECEK';
+ ['small','large','xlarge','xxlarge'].forEach(k=>customPreview.classList.toggle(k,customSize.value===k));
+}
+customText.addEventListener('input',updateCustom);customSize.addEventListener('change',updateCustom);
+byId('extraCustomAdd').addEventListener('click',()=>{const t=customText.value.trim();if(!t){alert('Önce adisyona yazılacak metni girin.');customText.focus();return}add({title:'Boş adisyon',text:t,kind:'custom',size:customSize.value},byId('extraCustomQty').value)});
+document.querySelectorAll('.extra-tab').forEach(btn=>btn.addEventListener('click',()=>{
+ const feedback=btn.dataset.extraPage==='feedback';
+ document.querySelectorAll('.extra-tab').forEach(b=>b.classList.toggle('active',b===btn));
+ document.querySelectorAll('.workspace,.queue-panel,.footnote').forEach(el=>el.hidden=feedback);
+ byId('extraFeedbackPage').hidden=!feedback;
+}));
+byId('extraClear').addEventListener('click',()=>{if(queue.length&&confirm('Müşteri etiketleri listesini temizleyelim mi?')){queue=[];renderQueue()}});
+async function shareFeedbackPNG(){
+ if(!queue.length)return;const x=queue[0].item;const canvas=document.createElement('canvas');canvas.width=400;canvas.height=240;const c=canvas.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,400,240);c.strokeStyle='#000';c.lineWidth=3;c.strokeRect(4,4,392,232);c.textAlign='center';c.textBaseline='middle';c.fillStyle='#000';
+ let title=x.kind==='preset'?String(x.title||'TEŞEKKÜRLER'):'';let body=String(x.text||'');c.font='bold 22px Arial';if(title)c.fillText("DOMINO'S",200,36);if(title){c.beginPath();c.moveTo(20,65);c.lineTo(380,65);c.stroke();c.font='bold 24px Arial';c.fillText(title,200,96)}
+ let font=x.kind==='custom'?({small:17,medium:23,large:29,xlarge:34,xxlarge:38}[x.size]||23):23;
+ const words=body.split(/\s+/);let lines=[],line='';c.font='bold '+font+'px Arial';for(const w of words){const test=line?line+' '+w:w;if(c.measureText(test).width>350&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);
+ while(lines.length>4&&font>12){font-=2;c.font='bold '+font+'px Arial';lines=[];line='';for(const w of words){const test=line?line+' '+w:w;if(c.measureText(test).width>350&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line)}
+ const startY=title?140:120,step=Math.min(36,Math.max(22,font+5));lines.slice(0,4).forEach((ln,i)=>c.fillText(ln,200,startY+(i-(Math.min(lines.length,4)-1)/2)*step));
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)return;const file=new File([blob],`Dominos_Musteri_${Date.now()}_50x30.png`,{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'NIIMBOT B2 müşteri etiketi'});return}}catch(e){if(e.name==='AbortError')return}
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);alert('PNG kaydedildi. NIIMBOT uygulamasından görseli içe aktar.');
+}
+
+byId('extraPrint').addEventListener('click',()=>{
+ const labels=queue.flatMap(x=>Array.from({length:x.qty},()=>x.item));
+ const frame=document.createElement('iframe');frame.style.cssText='position:fixed;left:-10000px;top:0;width:50mm;height:30mm;border:0';document.body.appendChild(frame);
+ const html=labels.map(x=>{
+  const len=String(x.text||'').length;
+  const sizeMap={small:12,medium:16,large:22,xlarge:27,xxlarge:33};
+  let pt=sizeMap[x.size||'medium']||16;
+  // Metin uzadıkça fiziksel 50 × 30 mm alana sığacak şekilde kontrollü küçült.
+  if(len>100) pt=Math.min(pt,5.5);
+  else if(len>70) pt=Math.min(pt,6);
+  else if(len>45) pt=Math.min(pt,6.5);
+  else if(len>28) pt=Math.min(pt,7.2);
+  const fontStyle=x.kind==='custom'?' style="font-size:'+pt+'pt"':'';
+  const presetLen=String(x.text||'').length;
+  const presetPt=presetLen>100?5.6:presetLen>70?6.2:presetLen>45?6.8:7.4;
+  const presetStyle=x.kind==='preset'?' style="font-size:'+presetPt+'pt"':'';
+  return '<main class="label '+(x.kind==='custom'?'custom':'preset')+'"><div class="inner">'+(x.kind==='preset'?'<small class="brand">DOMINO\'S</small><small class="heading">'+safe(x.title)+'</small>':'')+'<strong'+(fontStyle||presetStyle)+'>'+safe(x.text)+'</strong>'+(x.kind==='preset'?'<small class="foot">Görüşünüzü bizimle paylaştığınız için teşekkür ederiz.</small>':'')+'</div></main>';
+}).join('');
+ frame.contentDocument.open();
+ frame.contentDocument.write('<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Müşteri etiketleri</title><style>'+
+ '@page{size:50mm 30mm;margin:0}*{box-sizing:border-box}html,body{margin:0!important;padding:0!important;width:50mm!important;height:auto!important;background:#fff!important;color:#000!important;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+ '.label{width:50mm;height:30mm;margin:0;padding:0;display:flex;align-items:stretch;justify-content:stretch;overflow:hidden;break-after:page;page-break-after:always;background:#fff;color:#000}'+
+ '.label:last-child{break-after:auto;page-break-after:auto}.inner{width:100%;height:100%;margin:0;border:.3mm solid #000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.2mm 2mm;gap:.4mm;overflow:hidden}'+
+ '.label small{font-size:5.2pt;line-height:1.03;font-weight:800;letter-spacing:.1pt}.label .brand{font-size:6pt;font-weight:900;letter-spacing:.4pt;border:0;padding:0;margin-bottom:.2mm}.label .heading{font-size:5.5pt;font-weight:900;letter-spacing:.1pt}.label strong{display:block;max-width:100%;font-size:7.8pt;line-height:1.05;font-weight:900;letter-spacing:0;overflow-wrap:anywhere;white-space:pre-wrap}.label .foot{font-size:4.8pt;font-weight:800;margin-top:.2mm}'+
+ '.custom .inner{border:.3mm solid #000;position:relative;top:0;width:100%;height:100%;margin:0;padding:1.2mm 2mm;flex:0 0 auto}.custom strong{line-height:1.04;overflow-wrap:anywhere;white-space:pre-wrap}'+
+ '</style></head><body>'+html+'</body></html>');
+ frame.contentDocument.close();
+ const cleanup=()=>setTimeout(()=>{if(frame.isConnected)frame.remove()},600);
+ frame.contentWindow.addEventListener('afterprint',cleanup,{once:true});
+ setTimeout(()=>{frame.contentWindow.focus();frame.contentWindow.print()},350);
+});
+
+// Baskı ayarlarını sakla/geri yükle. Yerel tarayıcıda kalıcıdır.
+const PRINT_PRESET_KEY='dominos-perfect-print-preset-v1';
+function getPrintTuning(){return {x:Number($('printX')?.value||0),y:Number($('printY')?.value||0),scale:Number($('printScale')?.value||100)}}
+function applyPrintTuning(v){if(!v)return;$('printX').value=v.x??0;$('printY').value=v.y??0;$('printScale').value=v.scale??100;}
+$('printSettingsBtn')?.addEventListener('click',()=>{const p=$('printTuning');p.style.display=p.style.display==='none'?'block':'none';});
+$('savePrintPreset')?.addEventListener('click',()=>{localStorage.setItem(PRINT_PRESET_KEY,JSON.stringify(getPrintTuning()));$('printTuneStatus').textContent='✅ Mükemmel baskı ayarı kaydedildi. Bu bilgisayarda saklanacak.';});
+$('restorePrintPreset')?.addEventListener('click',()=>{const v=localStorage.getItem(PRINT_PRESET_KEY);if(!v){$('printTuneStatus').textContent='⚠ Henüz kaydedilmiş bir baskı ayarı yok.';return;}try{applyPrintTuning(JSON.parse(v));$('printTuneStatus').textContent='✅ Kaydedilen baskı ayarı geri yüklendi.';}catch{$('printTuneStatus').textContent='⚠ Kayıt okunamadı.';}});
+$('resetPrintTune')?.addEventListener('click',()=>{applyPrintTuning({x:0,y:0,scale:100});$('printTuneStatus').textContent='Sıfır ayara döndü. Kaydetmediğiniz sürece referans ayar değişmez.';});
+
+draw(0);draw(1);renderQueue();updateCustom();
+})();
+</script>
+
+
+
+<style>
+/* Haftanın günü etikette daha büyük ve kolay okunur */
+.preview-label .label-tag { font-size: 15px !important; line-height: 1.15 !important; padding: 6px 10px !important; letter-spacing: .6px !important; }
+#printArea .p-tag { font-size: 14pt !important; line-height: 1.1 !important; padding: 1.6mm 2.8mm !important; letter-spacing: .35pt !important; }
+@media(max-width:560px) { .preview-label .label-tag { font-size: 13px !important; padding: 5px 8px !important; } }
+</style>
+
+
+<style>
+
+</style>
+
+
+<style>
+
+</style>
+
+<style>
+
+</style>
+
+<style>
+/* Tek etiket = tek 100 × 50 mm sayfa. Kuyrukta birden fazla kayıt varsa her kayıt bir sayfadır. */
+
+/* Ön izleme: hidden niteliği CSS tarafından ezilmesin. */
+#photoPreview[hidden], #photoPop[hidden] { display:none !important; }
+#photoPreview:not([hidden]) { display:block !important; max-width:100%; max-height:145px; object-fit:contain; }
+</style>
+
+
+<style>
+
+#photoPreview[hidden], #photoPop[hidden] { display:none !important; }
+#photoPreview:not([hidden]) { display:block !important; max-width:100%; max-height:145px; object-fit:contain; }
+</style>
+
+
+
+
+
+
+
+</body>
+</html>
